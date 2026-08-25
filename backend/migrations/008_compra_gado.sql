@@ -1,0 +1,2 @@
+ALTER TABLE lancamentos_financeiros
+  MODIFY COLUMN tipo ENUM('ENTRADA','SAIDA','COMPRA_GADO') NOT NULL;

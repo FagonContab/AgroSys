@@ -1,0 +1,39 @@
+CREATE TABLE IF NOT EXISTS produtores (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(150) NOT NULL,
+  ativo BOOLEAN NOT NULL DEFAULT TRUE,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS usuarios (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(150) NOT NULL,
+  login VARCHAR(100) NOT NULL UNIQUE,
+  senha_hash VARCHAR(255) NOT NULL,
+  ativo BOOLEAN NOT NULL DEFAULT TRUE,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS produtor_usuarios (
+  produtor_id INT UNSIGNED NOT NULL,
+  usuario_id INT UNSIGNED NOT NULL,
+  perfil ENUM('ADMIN','USUARIO') NOT NULL DEFAULT 'USUARIO',
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (produtor_id, usuario_id),
+  CONSTRAINT fk_produtor_usuario_produtor FOREIGN KEY (produtor_id) REFERENCES produtores(id) ON DELETE CASCADE,
+  CONSTRAINT fk_produtor_usuario_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS sessoes (
+  token_hash CHAR(64) PRIMARY KEY,
+  usuario_id INT UNSIGNED NOT NULL,
+  produtor_id INT UNSIGNED NOT NULL,
+  expira_em DATETIME NOT NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_sessao_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+  CONSTRAINT fk_sessao_produtor FOREIGN KEY (produtor_id) REFERENCES produtores(id) ON DELETE CASCADE,
+  INDEX idx_sessao_expira (expira_em)
+);
+
+INSERT INTO produtores (nome)
+SELECT 'Robson' WHERE NOT EXISTS (SELECT 1 FROM produtores WHERE nome='Robson');
