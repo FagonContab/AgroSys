@@ -1,0 +1,43 @@
+services:
+  agrosys-web:
+    container_name: agrosys-web
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      agrosys-api:
+        condition: service_healthy
+    networks:
+      - public-proxy
+      - agrosys-internal
+
+  agrosys-api:
+    container_name: agrosys-api
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/api/saude').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - agrosys-internal
+
+networks:
+  public-proxy:
+    external: true
+    name: public-proxy
+  agrosys-internal:
+    driver: bridge

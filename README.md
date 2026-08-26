@@ -18,6 +18,10 @@ npm.cmd run dev
 
 Abra `http://localhost:4200`. A API fica em `http://localhost:3000/api`.
 
+## Implantação com Docker
+
+A publicação em produção utiliza containers separados para frontend e API e pode acessar um MySQL instalado diretamente na máquina hospedeira. Consulte [IMPLANTACAO_DOCKER.md](IMPLANTACAO_DOCKER.md).
+
 ## Funcionalidades
 
 - Cadastro e edição de animais
